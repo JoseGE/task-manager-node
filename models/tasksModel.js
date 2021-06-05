@@ -17,6 +17,12 @@ class TasksModel {
         return list;
     }
 
+    deleteTask(id = '') {
+        if (this._list[id]) {
+            delete this._list[id];
+        }
+    }
+
     loadtaskFromDB(tasks = []) {
         for (const task of tasks) {
             this._list[task.id] = task;
@@ -28,38 +34,21 @@ class TasksModel {
         this._list[task.id] = task;
     }
 
-    showList({ completed = 0, pending = 0 }) {
+    showList() {
         let index = 1;
 
         for (const task of this.listArray) {
-
+            const idx = `${index++}`.green;
             const { description, completedDate } = task;
             const state = (completedDate) ? 'COMPLETADA'.green : 'PENDIENTE'.red;
-            if (completed) {
-                const idx = `${index++}`.green;
-                if (completedDate) {
-                    console.log(`${idx} ${description} :: ${completedDate}`);
-                }
-            } else if (pending) {
-                const idx = `${index++}`.green;
-                if (!completedDate) {
-                    console.log(`${idx} ${description} :: ${state}`);
-                }
-            } else {
-                const idx = `${index++}`.green;
-
-                console.log(`${idx} ${description} :: ${state}`);
-            }
-
+            console.log(`${idx} ${description} :: ${state}`);
         }
         // console.log(this._list);
     }
 
     showListPendingTask() {
         let index = 1;
-
         for (const task of this.listArray) {
-
             const { description, completedDate } = task;
             const state = (completedDate) ? 'COMPLETADA'.green : 'PENDIENTE'.red;
 
@@ -67,15 +56,11 @@ class TasksModel {
                 const idx = `${index++}`.green;
                 console.log(`${idx} ${description} :: ${state}`);
             }
-
-
         }
     }
     showListCompletedTask() {
         let index = 1;
-
         for (const task of this.listArray) {
-
             const { description, completedDate } = task;
             const state = (completedDate) ? 'COMPLETADA'.green : 'PENDIENTE'.red;
 
@@ -84,9 +69,21 @@ class TasksModel {
                 console.log(`${idx} ${description} :: ${completedDate}`);
             }
         }
-
-
     }
 
+    toggleState(taskId = []) {
+        taskId.forEach(id => {
+            const task = this._list[id];
+            if (!task.completedDate) {
+                task.completedDate = new Date().toISOString();
+            }
+        });
+
+        this.listArray.forEach(task => {
+            if (!taskId.includes(task.id)) {
+                this._list[task.id].completedDate = null;
+            }
+        });
+    }
 }
 module.exports = TasksModel;

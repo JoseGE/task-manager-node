@@ -1,6 +1,6 @@
 
 require('colors');
-const { inquirerMenu, pause, readInput } = require('./helpers/inquirer');
+const { inquirerMenu, pause, readInput, tasksToDelete, confirm, tasksCheckList } = require('./helpers/inquirer');
 const dataFile = require('./helpers/dataFile');
 const TasksModel = require('./models/tasksModel')
 
@@ -32,15 +32,26 @@ const main = async () => {
             case '4':
                 tasks.showListPendingTask();
                 break;
-
+            case '5':
+                const ids = await tasksCheckList(tasks.listArray);
+                tasks.toggleState(ids);
+                break;
+            case '6':
+                const id = await tasksToDelete(tasks.listArray);
+                if (id !== '0') {
+                    const ok = await confirm(`Esta seguro?`);
+                    if (ok) {
+                        tasks.deleteTask(id);
+                        console.log('Tarea borrada correctamente')
+                    }
+                }
+                break;
             default:
                 break;
-
         }
         dataFile.save(tasks.listArray);
         await pause();
     } while (opt !== '0');
-
 }
 
 main();
